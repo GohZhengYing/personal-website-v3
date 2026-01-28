@@ -11,6 +11,7 @@ async function bootstrap() {
 
   // CORS
   const allowedOrigins = [
+    'https://gohzhengying.netlify.app',
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 
