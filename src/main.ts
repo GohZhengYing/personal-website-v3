@@ -10,26 +10,28 @@ async function bootstrap() {
   app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
   // CORS
-  const allowedOrigins = [
-    'https://gohzhengying.netlify.app',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
-
   app.enableCors({
-    origin: (origin, callback) => {
-      // allow non-browser clients (Postman, curl)
-      if (!origin) return callback(null, true);
+  origin: (origin, callback) => {
+    console.log('CORS check, origin:', origin); // debug
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+    // allow non-browser clients (Postman, curl)
+    if (!origin) return callback(null, true);
+
+    // simple check: allow your frontend domain (including www)
+    if (
+      origin.startsWith('https://gohzhengying.netlify.app') ||
+      origin === process.env.FRONTEND_URL
+    ) {
+      return callback(null, true);
+    }
+
+    console.warn('CORS blocked for origin:', origin);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+});
 
   const port = process.env.PORT || 3000;
 
